@@ -175,7 +175,6 @@ class Configurator extends Component {
               />
             ))}
           </FlexBox>
-
           <Badge
             className=""
             colorScheme={2}
