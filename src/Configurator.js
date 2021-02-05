@@ -48,7 +48,6 @@ class Configurator extends Component {
   }
 
   async componentDidMount() {
-    // const query = buildQuery({...})
     let sql =
       "https://sap-odata.gomselmash.by/sap/opu/odata/ZHM/C_CONF_MAT_CDS/xZHMxc_conf_mat?$format=json";
 
@@ -166,7 +165,7 @@ class Configurator extends Component {
             icon={<Icon name="employee" />}
             slot=""
             style={{}}
-            tooltip="Гостевой вход"
+            tooltip="Гостевой вход Логин:partner Пароль:partner маленькими буквами"
           >
             Гостевой вход: Логин:partner Пароль:partner маленькими буквами
           </Badge>
