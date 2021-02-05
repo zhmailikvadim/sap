@@ -8,9 +8,11 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@ui5/webcomponents": "^1.0.0-rc.11",
+    "@ui5/webcomponents-base": "^0.28.0",
     "@ui5/webcomponents-fiori": "^1.0.0-rc.11",
     "@ui5/webcomponents-icons": "^1.0.0-rc.11",
-    "@ui5/webcomponents-react": "^0.13.5",
+    "@ui5/webcomponents-react": "^0.13.6",
+    "@ui5/webcomponents-react-base": "^0.13.5",
     "@ui5/webcomponents-react-charts": "^0.13.5",
     "chart.js": "^2.9.4",
     "chartjs-plugin-zoom": "^0.7.7",
@@ -26,9 +28,9 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -48,5 +50,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "file-loader": "^6.2.0",
+    "react-app-rewired": "^2.1.8"
   }
 }

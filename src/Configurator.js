@@ -1,11 +1,7 @@
 import React, { Component } from "react";
-//import Loader from "./Loader";
-//import OData from 'react-odata';
-//import buildQuery from 'odata-query';
 import { Loader } from "@ui5/webcomponents-react/lib/Loader";
 import { FlexBox } from "@ui5/webcomponents-react/lib/FlexBox";
 import { RadioButton } from "@ui5/webcomponents-react/lib/RadioButton";
-//import { Label } from "@ui5/webcomponents-react/lib/Label";
 import { FlexBoxJustifyContent } from "@ui5/webcomponents-react/lib/FlexBoxJustifyContent";
 import { FlexBoxAlignItems } from "@ui5/webcomponents-react/lib/FlexBoxAlignItems";
 import { FlexBoxDirection } from "@ui5/webcomponents-react/lib/FlexBoxDirection";
@@ -13,24 +9,26 @@ import { ValueState } from "@ui5/webcomponents-react/lib/ValueState";
 import { CheckBox } from "@ui5/webcomponents-react/lib/CheckBox";
 import { Badge } from "@ui5/webcomponents-react/lib/Badge";
 import "@ui5/webcomponents/dist/features/InputElementsFormSupport.js";
-import { List } from "@ui5/webcomponents-react/lib/List";
 import { StandardListItem } from "@ui5/webcomponents-react/lib/StandardListItem";
 import { Card } from "@ui5/webcomponents-react/lib/Card";
+import { Icon } from "@ui5/webcomponents-react/lib/Icon";
 
-//import { Icon } from '@ui5/webcomponents-react/lib/Icon';
-//import { Carousel } from "@ui5/webcomponents-react/lib/Carousel";
-//"import {useMDXComponents} from './context';
-//import { MDXCreateElement } from "@ui5/webcomponents-react/lib/"
-//import {MDXCreateElement} from '@mdx-js/react'
-var myHeaders = new Headers();
 var basket = [];
 var items = [];
+var radioButtons = {};
 var sum = 0;
 var sumString;
 var requestOptions = {
   method: "GET",
   credentials: "include",
-  headers: myHeaders,
+  headers: {
+    //'Access-Control-Allow-Origin': '*',
+    //'Authorization': 'Basic ' + 'partner:partner'.toString('base64'),
+    //'Access-Control-Allow-Methods' : 'GET,POST,PUT,DELETE,OPTIONS',
+    //'Access-Control-Allow-Headers': 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, Access-Control-Allow-Origin',
+    //'Accept': 'application/json',
+    //'Content-Type': 'application/json'
+  },
   redirect: "follow",
 };
 
@@ -45,6 +43,7 @@ class Configurator extends Component {
       isLoadingGroup: false,
       data_conf_mat: [],
       data_group: [],
+      radioButtons: {},
     };
   }
 
@@ -56,7 +55,6 @@ class Configurator extends Component {
     await fetch(sql, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        console.log(result);
         this.setState({
           data_conf_mat: result.d.results,
           isLoadingMat: false,
@@ -71,13 +69,11 @@ class Configurator extends Component {
       basket: basket,
       cMaterial: item.matnr_ext,
     });
-    console.log(item);
     let conf_mat_uuid = item.conf_mat_uuid;
     let sql =
       "https://sap-odata.gomselmash.by/sap/opu/odata/ZHM/C_CONF_MAT_CDS/xZHMxc_conf_mat(guid'" +
       conf_mat_uuid +
       "')?$format=json&$expand=to_groupdata2/to_itemtdata";
-    console.log(sql);
     this.setState({
       data_group: [],
       isLoadingGroup: true,
@@ -90,29 +86,31 @@ class Configurator extends Component {
           isLoadingGroup: false,
         });
         items = [];
-        this.state.data_group.map((item) =>
-          item.to_itemtdata.results.map((material, i) => items.push(material))
+        radioButtons = {};
+        this.state.data_group.forEach((item) =>
+          item.to_itemtdata.results.forEach((material, i) => {
+            items.push(material);
+            radioButtons[material.matnr_ext] = false;
+          })
         );
-        console.log(items);
+        this.setState({
+          radioButtons: radioButtons,
+        });
       })
       .catch((error) => console.log("error", error));
   };
-
   onItemRadioSelect = (e) => {
     basket = this.state.basket;
     if (e.target.selected) {
       basket.push(e.target.value);
-      console.log(basket);
       items.forEach((item) => {
         if (
           e.target.name === item.mat_group_uuid &&
           e.target.value !== item.matnr_ext
         ) {
           let idx = basket.indexOf(item.matnr_ext);
-          console.log(idx);
           if (idx > -1) {
-            console.log("Delete", item.matnr_ext);
-            console.log(basket.splice(basket.indexOf(item.matnr_ext), 1));
+            basket.splice(basket.indexOf(item.matnr_ext), 1);
           }
         }
       });
@@ -121,8 +119,14 @@ class Configurator extends Component {
       basket: basket,
     });
   };
+  onItemRadioClick = (e) => {
+    radioButtons = this.state.radioButtons;
+    radioButtons[e.target.value] = e.target.selected;
+    this.setState({
+      radioButtons: radioButtons,
+    });
+  };
   onItemCheckBoxChange = (e) => {
-    console.log(e.target.checked, e.target.name);
     basket = this.state.basket;
 
     if (e.target.checked) {
@@ -136,7 +140,6 @@ class Configurator extends Component {
   };
 
   render() {
-    console.log(this.state.basket);
     sum = 0;
     this.state.basket.forEach(
       (item) =>
@@ -155,7 +158,21 @@ class Configurator extends Component {
     sumString = "Стоимость комплекта: " + sum + " USD";
     let confMat;
     if (this.state.isLoadingMat) {
-      confMat = <Loader />;
+      confMat = (
+        <div>
+          <Badge
+            className=""
+            colorScheme={2}
+            icon={<Icon name="employee" />}
+            slot=""
+            style={{}}
+            tooltip="Гостевой вход"
+          >
+            Гостевой вход: Логин:partner Пароль:partner маленькими буквами
+          </Badge>
+          <Loader />
+        </div>
+      );
     } else {
       confMat = (
         <FlexBox
@@ -165,9 +182,22 @@ class Configurator extends Component {
           justifyContent={FlexBoxJustifyContent.SpaceBetween}
           direction={FlexBoxDirection.Column}
         >
+          <Badge
+            key="12"
+            className=""
+            colorScheme={2}
+            //icon={<Icon name="employee" />}
+            slot=""
+            style={{}}
+            tooltip="Наши модели"
+          >
+            Наши модели сельскохозяственной техники
+          </Badge>
           <FlexBox alignItems={FlexBoxAlignItems.Center}>
             {this.state.data_conf_mat.map((item) => (
               <RadioButton
+                key={item.matnr_ext}
+                wrap={true}
                 name="ConfMat"
                 text={item.matnr_ext}
                 valueState={ValueState.Error}
@@ -206,14 +236,16 @@ class Configurator extends Component {
             justifyContent={FlexBoxJustifyContent.SpaceBetween}
           >
             {this.state.data_group.map((item) => (
-              <div>
+              <div key={item.mat_group_uuid}>
                 <FlexBox
+                  key={item.group_name}
                   alignItems={FlexBoxAlignItems.Center}
                   direction={FlexBoxDirection.Column}
                   justifyContent={FlexBoxJustifyContent.SpaceBetween}
                 >
                   {" "}
                   <Badge
+                    key={item.group_name}
                     className=""
                     colorScheme={1}
                     //icon={<Icon name="employee" />}
@@ -227,12 +259,15 @@ class Configurator extends Component {
                 {item.to_itemtdata.results.map((material, i) =>
                   item.type_of_group === "ONE" ? (
                     <FlexBox
+                      key={material.matnr_ext}
                       alignItems={FlexBoxAlignItems.Start}
                       direction={FlexBoxDirection.Column}
                       justifyContent={FlexBoxJustifyContent.Start}
                     >
                       <RadioButton
+                        key={material.matnr_ext}
                         name={item.mat_group_uuid}
+                        checked={this.state.radioButtons[material]}
                         text={
                           material.maktx +
                           ": " +
@@ -242,17 +277,19 @@ class Configurator extends Component {
                         }
                         valueState={ValueState.Warning}
                         value={material.matnr_ext}
-                        //onClick={this.onItemSelect.bind(null, material)}
+                        onClick={this.onItemRadioClick}
                         onSelect={this.onItemRadioSelect}
                       />
                     </FlexBox>
                   ) : (
                     <FlexBox
+                      key={material.matnr_ext}
                       alignItems={FlexBoxAlignItems.Start}
                       direction={FlexBoxDirection.Column}
                       justifyContent={FlexBoxJustifyContent.Start}
                     >
                       <CheckBox
+                        key={material.matnr_ext}
                         name={material.matnr_ext}
                         text={
                           material.maktx +
@@ -276,7 +313,7 @@ class Configurator extends Component {
             justifyContent={FlexBoxJustifyContent.SpaceBetween}
           >
             <Card
-              //avatar={<Icon name="person-placeholder" />}
+              avatar={<Icon name="cart-5" />}
               className=""
               heading={sumString}
               onHeaderClick={function noRefCheck() {}}
@@ -292,6 +329,15 @@ class Configurator extends Component {
             >
               {this.state.basket.map((item) => (
                 <StandardListItem
+                  key={
+                    items[
+                      items
+                        .map(function (e) {
+                          return e.matnr_ext;
+                        })
+                        .indexOf(item)
+                    ].maktx
+                  }
                   info={
                     items[
                       items
@@ -301,7 +347,9 @@ class Configurator extends Component {
                         .indexOf(item)
                     ].price
                   }
-                  description={
+                  description={item}
+                >
+                  {
                     items[
                       items
                         .map(function (e) {
@@ -310,8 +358,6 @@ class Configurator extends Component {
                         .indexOf(item)
                     ].maktx
                   }
-                >
-                  {item}
                 </StandardListItem>
               ))}
             </Card>
@@ -327,5 +373,4 @@ class Configurator extends Component {
     );
   }
 }
-
 export default Configurator;
