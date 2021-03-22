@@ -99,8 +99,6 @@ class DebtChart extends Component {
       }
     });
 
-    //console.log(uniqueLandx)
-
     let dataset = {
       label: "",
       fill: false,
@@ -204,6 +202,7 @@ class DebtChart extends Component {
       let findElement = false;
       let debt_usd;
       let chartType = this.state.chartType;
+      
       myCSVData.labels.forEach(function (item_data) {
         findElement = false;
 

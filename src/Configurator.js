@@ -12,6 +12,10 @@ import "@ui5/webcomponents/dist/features/InputElementsFormSupport.js";
 import { StandardListItem } from "@ui5/webcomponents-react/lib/StandardListItem";
 import { Card } from "@ui5/webcomponents-react/lib/Card";
 import { Icon } from "@ui5/webcomponents-react/lib/Icon";
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Basic cGFydG5lcjpwYXJ0bmVy");
+myHeaders.append("Content-Type","application/json");
+//myHeaders.append("Cookie", "sap-usercontext=sap-client=100; SAP_SESSIONID_NWD_100=OZI1Q5Xkna6lz_Kj-B0TJ2oEgstp9BHrosYAUFa-bjE%3d");
 
 var basket = [];
 var items = [];
@@ -21,14 +25,7 @@ var sumString;
 var requestOptions = {
   method: "GET",
   credentials: "include",
-  headers: {
-    //'Access-Control-Allow-Origin': '*',
-    //'Authorization': 'Basic ' + 'partner:partner'.toString('base64'),
-    //'Access-Control-Allow-Methods' : 'GET,POST,PUT,DELETE,OPTIONS',
-    //'Access-Control-Allow-Headers': 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, Access-Control-Allow-Origin',
-    //'Accept': 'application/json',
-    //'Content-Type': 'application/json'
-  },
+  headers: myHeaders,
   redirect: "follow",
 };
 
