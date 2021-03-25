@@ -111,13 +111,11 @@ class CredChart extends Component {
     });
 
     uniqueLabels.sort((a, b) => {
-        let result;
-        if (a > b)
-          result =  1;
-        if (a < b)
-          result = -1;
-        return result;
-      });
+      let result;
+      if (a > b) result = 1;
+      if (a < b) result = -1;
+      return result;
+    });
     let dataset_array_all = [];
     let measures_array = [];
     let measures_array_overall = [];
@@ -136,7 +134,7 @@ class CredChart extends Component {
             let measure_one = {};
             measure_one["accessor"] = element1.Txt20;
             measure_one["label"] = element1.Txt50;
-            measure_one['hideDataLabel'] = true;
+            measure_one["hideDataLabel"] = true;
             measures_array.push(measure_one);
           }
         }
@@ -155,9 +153,7 @@ class CredChart extends Component {
       let dataset_one = {};
       elementExist = false;
       sortDataOver.forEach((element1) => {
-        if (
-          element === element1.Data &&
-          element1.Hkont !== "OVERALL" ) {
+        if (element === element1.Data && element1.Hkont !== "OVERALL") {
           elementExist = true;
           dataset_one["data"] = element1.Data;
           dataset_one[element1.Txt20] = element1.ExpamountUsd;
@@ -165,7 +161,7 @@ class CredChart extends Component {
             let measure_one = {};
             measure_one["accessor"] = element1.Txt20;
             measure_one["label"] = element1.Txt50;
-            measure_one['hideDataLabel'] = true;
+            measure_one["hideDataLabel"] = true;
             measures_array_over.push(measure_one);
           }
         }
@@ -176,7 +172,7 @@ class CredChart extends Component {
     });
 
     //OVERALL
-    let dataset_array_overall = [];    
+    let dataset_array_overall = [];
     uniqueLabels.forEach((element, i1) => {
       this.state.data_overall.forEach((element1) => {
         if (element === element1.Data && element1.Hkont === "OVERALL") {
@@ -189,13 +185,13 @@ class CredChart extends Component {
             let measure_one = {};
             measure_one["accessor"] = element1.Txt20;
             measure_one["label"] = element1.Txt50;
-            measure_one['hideDataLabel'] = true;
+            measure_one["hideDataLabel"] = true;
             measures_array_overall.push(measure_one);
 
             let measure_one_over = {};
             measure_one_over["accessor"] = "Просроченная";
             measure_one_over["label"] = "Просроченная";
-            measure_one_over['hideDataLabel'] = true;
+            measure_one_over["hideDataLabel"] = true;
             measures_array_overall.push(measure_one_over);
           }
         }
@@ -233,7 +229,9 @@ class CredChart extends Component {
           description={"Кредиторская задолженность"}
           title={"Группы счетов"}
         />
-        <Label style={{ color: "blue" }}>Вся кредиторская задолженность</Label>
+        <Label style={{ color: "blue" }}>
+          Вся кредиторская задолженность в USD
+        </Label>
         <LineChart
           chartConfig={chartConfig}
           dataset={dataset_array_all}
@@ -244,7 +242,7 @@ class CredChart extends Component {
           style={{ height: "90vh", width: "95%" }}
         />
         <Label style={{ color: "blue" }}>
-          Просроченная кредиторская задолженность
+          Просроченная кредиторская задолженность в USD
         </Label>
         <LineChart
           chartConfig={chartConfig}
@@ -256,7 +254,7 @@ class CredChart extends Component {
           style={{ height: "95vh", width: "95%" }}
         />
         <Label style={{ color: "blue" }}>
-          Вся общая и просроченная задолженность
+          Вся общая и просроченная задолженность в USD
         </Label>
         <LineChart
           chartConfig={chartConfig}
@@ -272,5 +270,4 @@ class CredChart extends Component {
     return <div>{outChartAll}</div>;
   }
 }
-
 export default CredChart;
