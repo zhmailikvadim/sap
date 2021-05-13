@@ -1,11 +1,12 @@
 import React, { Component } from "react";
+// yarn add @nivo/core @nivo/bump
+import { ResponsiveBump } from '@nivo/bump'
 import { Line } from "react-chartjs-3";
 import { Loader } from "@ui5/webcomponents-react/lib/Loader";
 import TableBar from "./TableBar.js";
 import "chartjs-plugin-zoom";
-//import OData from 'react-odata';
-//import buildQuery from 'odata-query';
 
+const cogiMatCount = 'cogiMatCount';
 const debt = "debt";
 const debtOver = "debt_over";
 const debtAndOver = "debt_and_over";
@@ -20,13 +21,8 @@ class DebtChart extends Component {
     super();
     this.state = {
       isLoading: true,
-      isLoading_fcat: true,
       data: [],
-      dataSAP: [],
-      fcat: [],
-      fields: [],
-      chartType: debtOver,
-      title: debtOverTitle,
+      chartType: cogiMatCount,
     };
   }
 
@@ -41,7 +37,7 @@ class DebtChart extends Component {
     };
 
     await fetch(
-      "https://sap-odata.gomselmash.by/sap/opu/odata/ZHM/SAP_ODATA_SRV/debt_historySet?$format=json",
+      "https://sap-odata.gomselmash.by/sap/opu/odata/ZHM/I_SAVE_COGI_CDS/xZHMxI_SAVE_COGI?$format=json",
       requestOptions
     )
       .then((response) => response.json())
