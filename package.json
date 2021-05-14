@@ -16,6 +16,7 @@
     "@ui5/webcomponents-react": "^0.13.6",
     "@ui5/webcomponents-react-base": "^0.13.5",
     "@ui5/webcomponents-react-charts": "^0.13.5",
+    "caniuse-lite": "^1.0.30001228",
     "chart.js": "^2.9.4",
     "chartjs-plugin-zoom": "^0.7.7",
     "fundamental-react": "^0.13.1",
