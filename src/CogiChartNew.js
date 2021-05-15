@@ -7,11 +7,14 @@ import { Button } from "fundamental-react/lib/Button";
 
 const countMatnr = "countMatnr";
 const sumVerprMatnr = "sumVerprMatnr";
+const sumVerprAll = "sumVerprAll";
 
 const countMatnrTitle =
   "Количество просроченных (3 дня и более) несписанных уникальных материалов";
 const sumVerprMatnrTitle =
   "Стоимость просроченных (3 дня и более) несписанных материалов, BYN";
+const sumVerprAllTitle =
+  "Всего просроченных (3 дня и более) несписанных материалов, BYN";
 
 class CogiChartNew extends Component {
   constructor() {
@@ -48,8 +51,6 @@ class CogiChartNew extends Component {
           data: result.d.results,
           isLoading: false,
         });
-        console.log(result);
-        console.log(result.d.results);
       })
       .catch((error) => console.log("error", error));
   }
@@ -60,11 +61,15 @@ class CogiChartNew extends Component {
   onSumVerprMatnr = () => {
     this.setState({ chartType: sumVerprMatnr, title: sumVerprMatnrTitle });
   };
+  onSumVerprAll = () => {
+    this.setState({ chartType: sumVerprAll, title: sumVerprAllTitle });
+  };
 
   render() {
     let emphasizedCountMatnr = "";
     let emphasizedSumVerpr = "";
-    let yAxisLabel="";
+    let emphasizedSumAll = "";
+    let yAxisLabel = "";
     if (this.state.chartType === countMatnr) {
       emphasizedCountMatnr = "emphasized";
       yAxisLabel = "Штуки, ШТ";
@@ -73,9 +78,20 @@ class CogiChartNew extends Component {
       emphasizedSumVerpr = "emphasized";
       yAxisLabel = "Белорусский рубль, BYN";
     }
+    if (this.state.chartType === sumVerprAll) {
+      emphasizedSumAll = "emphasized";
+      yAxisLabel = "Белорусский рубль, BYN";
+    }
 
     let uniqueLabels = [];
     let uniqueCeh = [];
+
+    this.state.data.sort((a, b) => {
+      let result;
+      if (a.data1 > b.data1) result = 1;
+      if (a.data1 < b.data1) result = -1;
+      return result;
+    });
 
     this.state.data.forEach((element, i) => {
       if (uniqueLabels.indexOf(element.data1) < 0) {
@@ -83,11 +99,36 @@ class CogiChartNew extends Component {
       }
     });
 
-    this.state.data.forEach((element, i) => {
-      if (uniqueCeh.indexOf(element.nazw) < 0) {
-        uniqueCeh.push(element.nazw);
+    this.state.data.sort((a, b) => {
+      let result;
+      if (a.data1 < b.data1) {
+        return 1;
       }
+      if (a.data1 > b.data1) {
+        return -1;
+      }
+
+      if (a.data1 === b.data1) {
+        if (a.count_matnr < b.count_matnr) {
+          return 1;
+        }
+        if (a.count_matnr > b.count_matnr) {
+          return -1;
+        }
+        return 0;
+      }
+      return result;
     });
+
+    if (this.state.chartType === sumVerprAll) {
+      uniqueCeh.push("Общая");
+    } else {
+      this.state.data.forEach((element, i) => {
+        if (uniqueCeh.indexOf(element.nazw) < 0) {
+          uniqueCeh.push(element.nazw);
+        }
+      });
+    }
 
     let chartData = {
       labels: [],
@@ -96,6 +137,7 @@ class CogiChartNew extends Component {
     chartData.labels = uniqueLabels;
 
     let colors = [
+      "#000000",
       "#7ad319",
       "#d20e45",
       "#ff6900",
@@ -121,7 +163,9 @@ class CogiChartNew extends Component {
       "#DE3163",
       "#FFBF00",
       "#40E0D0",
-      "#40E0D0",
+      "#8B0000",
+      "#006400",
+      "#000080",
     ];
 
     uniqueCeh.forEach((nazw, i) => {
@@ -146,18 +190,32 @@ class CogiChartNew extends Component {
         pointHitRadius: 10,
         data: [], // ДАННЫЕ - здесь ваши данные- 652230, 1580, 28748.. - так же в массиве и в том же порядке.
       };
-      chartData.labels.forEach((item_data) => {
-        this.state.data.forEach((item, i) => {
-          if (nazw === item.nazw && item.data1 === item_data) {
-            if (this.state.chartType === countMatnr) {
-              dataset.data.push(item.count_matnr);
+
+      if (this.state.chartType === sumVerprAll) {
+        chartData.labels.forEach((item_data) => {
+          let sumVerpr = 0;
+          this.state.data.forEach((item, i) => {
+            if (item.data1 === item_data) {
+              sumVerpr = sumVerpr + Number(item.verpr_count);
             }
-            if (this.state.chartType === sumVerprMatnr) {
-              dataset.data.push(item.verpr_count);
-            }
-          }
+          });
+
+          dataset.data.push(sumVerpr);
         });
-      });
+      } else {
+        chartData.labels.forEach((item_data) => {
+          this.state.data.forEach((item, i) => {
+            if (nazw === item.nazw && item.data1 === item_data) {
+              if (this.state.chartType === countMatnr) {
+                dataset.data.push(item.count_matnr);
+              }
+              if (this.state.chartType === sumVerprMatnr) {
+                dataset.data.push(item.verpr_count);
+              }
+            }
+          });
+        });
+      }
       chartData.datasets.push(dataset);
     });
 
@@ -170,40 +228,39 @@ class CogiChartNew extends Component {
                 option={emphasizedCountMatnr}
                 onClick={() => this.onCountMatnr()}
               >
-                Просрочено (номенклатура)
+                Просрочено списание ТМЦ (номенклатура)
               </Button>
               <Button
                 option={emphasizedSumVerpr}
                 onClick={() => this.onSumVerprMatnr()}
               >
-                Просрочено (стоимость)
+                Просрочено списание ТМЦ (стоимость)
+              </Button>
+              <Button
+                option={emphasizedSumAll}
+                onClick={() => this.onSumVerprAll()}
+              >
+                Общая стоимость несвоевременно списанных ТМЦ
               </Button>
             </>
           }
-          description={"Несвоевременное списание ТМЦ, несписаны более 3 дней"}
-          title={"Недосписание ТМЦ, транзакция COGI"}
+          description={"Несвоевременное списание ТМЦ, более 3 дней"}
+          title={"COGI"}
         />
       </React.Fragment>
     );
 
     const options = {
+      tooltips: {
+        mode: "index",
+      },
+
       title: {
         display: true,
         fontColor: "#000000",
         fontSize: 16,
         text: this.state.title,
       },
-
-      /*tooltips: {
-      callbacks: {
-          label: function(tooltipItem, data) {
-              return "$" + Number(tooltipItem.yLabel).toFixed(0).replace(/./g, function(c, i, a) {
-                  return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
-              });
-          }
-      }
-  },*/
-
       zoom: {
         enabled: true,
         mode: "y",
