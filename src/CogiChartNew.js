@@ -137,11 +137,16 @@ class CogiChartNew extends Component {
     chartData.labels = uniqueLabels;
 
     let colors = [
-      "#000000",
-      "#7ad319",
-      "#d20e45",
-      "#ff6900",
-      "#f47373",
+      "#EAB543", 
+      "#25CCF7",
+      "#55E6C1",
+      "#CAD3C8",
+      "#FEA47F",
+      "#F97F51",
+      "#1B9CFC",
+      "#F8EFBA",
+      "#58B19F",
+      "##2C3A47",
       "#b80000",
       "#2ccce4",
       "#9900ef",
@@ -165,7 +170,6 @@ class CogiChartNew extends Component {
       "#40E0D0",
       "#8B0000",
       "#006400",
-      "#000080",
     ];
 
     uniqueCeh.forEach((nazw, i) => {
