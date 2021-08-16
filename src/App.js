@@ -29,7 +29,7 @@ class App extends Component {
               component={() => {
                 global.window &&
                   (global.window.location.href =
-                    "https://sap-odata.gomselmash.by/sap/bc/ui2/flp?sap-client=100");
+                    "https://sap-odata.gomselmash.by/sap/bc/ui2/flp");
                 return null;
               }}
             />            

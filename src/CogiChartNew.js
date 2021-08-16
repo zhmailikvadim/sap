@@ -253,6 +253,7 @@ class CogiChartNew extends Component {
         lineTension: 0.1,
         backgroundColor: "rgba(75,192,192,0.4)",
         borderColor: colors[i],
+        hidden: true,
         borderCapStyle: "butt",
         borderDash: [],
         borderDashOffset: 0.0,

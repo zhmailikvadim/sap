@@ -127,6 +127,7 @@ class DebtChart extends Component {
     };
     myCSVData.labels = uniqueLabels;
     uniqueLandx.forEach((land, i) => {
+      dataset.hidden = true;
       if (i === 0) {
         dataset.borderColor = "#7ad319";
       }
