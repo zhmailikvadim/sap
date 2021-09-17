@@ -5,18 +5,12 @@ import "chartjs-plugin-zoom";
 import { ActionBar } from "fundamental-react/lib/ActionBar";
 import { Button } from "fundamental-react/lib/Button";
 
-const countMatnr = "countMatnr";
 const sumVerprMatnr = "sumVerprMatnr";
-const sumVerprAll = "sumVerprAll";
 
-const countMatnrTitle =
-  "Количество просроченных (3 дня и более) несписанных уникальных материалов";
 const sumVerprMatnrTitle =
-  "Стоимость просроченных (3 дня и более) несписанных материалов, BYN";
-const sumVerprAllTitle =
-  "Всего просроченных (3 дня и более) несписанных материалов, BYN";
+  "Динамика остатков материалов на складах в разрезе партии";
 
-class App extends Component {
+class ChartZU extends Component {
   constructor() {
     super();
     this.state = {
@@ -42,7 +36,7 @@ class App extends Component {
     };
 
     await fetch(
-      "https://sap-odata.gomselmash.by/sap/opu/odata/ZHM/I_SAVE_COGI_CDS/xZHMxI_SAVE_COGI?$format=json",
+           "https://sap-odata-dev.gomselmash.by/sap/opu/odata/sap/ZRA_C_ZU_CDS/ZRA_C_ZU?$format=json",
       requestOptions
     )
       .then((response) => response.json())
@@ -55,31 +49,16 @@ class App extends Component {
       .catch((error) => console.log("error", error));
   }
 
-  onCountMatnr = () => {
-    this.setState({ chartType: countMatnr, title: countMatnrTitle });
-  };
   onSumVerprMatnr = () => {
     this.setState({ chartType: sumVerprMatnr, title: sumVerprMatnrTitle });
   };
-  onSumVerprAll = () => {
-    this.setState({ chartType: sumVerprAll, title: sumVerprAllTitle });
-  };
 
   render() {
-    let emphasizedCountMatnr = "";
     let emphasizedSumVerpr = "";
-    let emphasizedSumAll = "";
     let yAxisLabel = "";
-    if (this.state.chartType === countMatnr) {
-      emphasizedCountMatnr = "emphasized";
-      yAxisLabel = "Штуки, ШТ";
-    }
+
     if (this.state.chartType === sumVerprMatnr) {
       emphasizedSumVerpr = "emphasized";
-      yAxisLabel = "Белорусский рубль, BYN";
-    }
-    if (this.state.chartType === sumVerprAll) {
-      emphasizedSumAll = "emphasized";
       yAxisLabel = "Белорусский рубль, BYN";
     }
 
@@ -104,32 +83,28 @@ class App extends Component {
       if (a.data1 < b.data1) {
         return 1;
       }
-      if (a.data1 > b.data1) {
+     if (a.data1 > b.data1) {
         return -1;
-      }
-
+     }
+    
       if (a.data1 === b.data1) {
-        if (a.count_matnr < b.count_matnr) {
+        if (a.wlabs < b.wlabs) {
           return 1;
         }
-        if (a.count_matnr > b.count_matnr) {
+        if (a.wlabs > b.wlabs) {
           return -1;
-        }
+       }
         return 0;
       }
       return result;
     });
 
-    if (this.state.chartType === sumVerprAll) {
-      uniqueCeh.push("Общая");
-    } else {
       this.state.data.forEach((element, i) => {
-        if (uniqueCeh.indexOf(element.nazw) < 0) {
-          uniqueCeh.push(element.nazw);
+        if (uniqueCeh.indexOf(element.upravlenie_sklad) < 0) {
+          uniqueCeh.push(element.upravlenie_sklad);
         }
       });
-    }
-
+    
     let chartData = {
       labels: [],
       datasets: [],
@@ -246,9 +221,9 @@ class App extends Component {
       } while (colors.indexOf(color) >= 0);
       colors.push("#" + ("000000" + color.toString(16)).slice(-6));
     }
-    uniqueCeh.forEach((nazw, i) => {
+    uniqueCeh.forEach((upravlenie_sklad, i) => {
       let dataset = {
-        label: nazw,
+        label: upravlenie_sklad,
         fill: false,
         lineTension: 0.1,
         backgroundColor: "rgba(75,192,192,0.4)",
@@ -269,65 +244,36 @@ class App extends Component {
         data: [], // ДАННЫЕ - здесь ваши данные- 652230, 1580, 28748.. - так же в массиве и в том же порядке.
       };
 
-      if (this.state.chartType === sumVerprAll) {
         chartData.labels.forEach((item_data) => {
-          let sumVerpr = 0;
           this.state.data.forEach((item, i) => {
-            if (item.data1 === item_data) {
-              sumVerpr = sumVerpr + Number(item.verpr_count);
-            }
-          });
+            if (upravlenie_sklad === item.upravlenie_sklad && item.data1 === item_data) {
 
-          dataset.data.push(sumVerpr);
-        });
-      } else {
-        chartData.labels.forEach((item_data) => {
-          this.state.data.forEach((item, i) => {
-            if (nazw === item.nazw && item.data1 === item_data) {
-              if (this.state.chartType === countMatnr) {
-                dataset.data.push(item.count_matnr);
-              }
               if (this.state.chartType === sumVerprMatnr) {
-                dataset.data.push(item.verpr_count);
+                dataset.data.push(item.wlabs);
               }
             }
           });
         });
-      }
       chartData.datasets.push(dataset);
     });
 
-    const defaultTableBar = (
+      const defaultTableBar = (
       <React.Fragment>
         <ActionBar
           actions={
-            <>
-              <Button
-                option={emphasizedCountMatnr}
-                onClick={() => this.onCountMatnr()}
-              >
-                Просрочено списание ТМЦ (номенклатура)
-              </Button>
               <Button
                 option={emphasizedSumVerpr}
                 onClick={() => this.onSumVerprMatnr()}
               >
-                Просрочено списание ТМЦ (стоимость)
+                Общие остатки по подразделениям
               </Button>
-              <Button
-                option={emphasizedSumAll}
-                onClick={() => this.onSumVerprAll()}
-              >
-                Общая стоимость несвоевременно списанных ТМЦ
-              </Button>
-            </>
           }
-          description={"Несвоевременное списание ТМЦ, более 3 дней"}
-          title={"COGI"}
+          description={"Остатки"}
+          title={"ZU"}
         />
       </React.Fragment>
-    );
-
+    ); 
+ 
     const options = {
       tooltips: {
         mode: "index",
@@ -402,11 +348,12 @@ class App extends Component {
               <Line data={chartData} options={options} title="График" />
             </div>
           </React.Fragment>
-        )}
+      )  }
       </div>
-    );
+    ); 
     return <div>{outChart}</div>;
   }
 }
 
-export default App;
+export default ChartZU;
+

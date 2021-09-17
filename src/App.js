@@ -10,7 +10,8 @@ import "@ui5/webcomponents-icons/dist/Assets";
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
-import cogiChartNew from "./CogiChartNew"
+import cogiChartNew from "./CogiChartNew";
+import ChartZU from "./ChartZU";
 import "./App.css";
 const history = createBrowserHistory();
 class App extends Component {
@@ -24,6 +25,7 @@ class App extends Component {
             <Route path="/credchart" component={credChart} />
             <Route path="/debtchart" component={debtChart} />
             <Route path="/cogichart" component={cogiChartNew} />
+            <Route path="/chartzu" component={ChartZU} />
             <Route
               path="/"
               component={() => {
