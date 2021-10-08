@@ -36,7 +36,7 @@ class ChartZU extends Component {
     };
 
     await fetch(
-           "https://sap-odata-dev.gomselmash.by/sap/opu/odata/sap/ZRA_C_ZU_CDS/ZRA_C_ZU?$format=json",
+           "https://sap-odata.gomselmash.by/sap/opu/odata/sap/ZRA_C_ZU_CDS/ZRA_C_ZU?$format=json",
       requestOptions
     )
       .then((response) => response.json())
