@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@mdx-js/react": "^1.6.22",
-    "@nivo/bump": "^0.69.1",
-    "@nivo/core": "^0.69.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -16,7 +13,6 @@
     "@ui5/webcomponents-react": "^0.13.6",
     "@ui5/webcomponents-react-base": "^0.13.5",
     "@ui5/webcomponents-react-charts": "^0.13.5",
-    "caniuse-lite": "^1.0.30001228",
     "chart.js": "^2.9.4",
     "chartjs-plugin-zoom": "^0.7.7",
     "fundamental-react": "^0.13.1",
@@ -28,8 +24,7 @@
     "react-jss": "^10.5.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.1",
-    "web-vitals": "^0.2.4"
+    "react-scripts": "4.0.1"
   },
   "scripts": {
     "start": "react-app-rewired start",

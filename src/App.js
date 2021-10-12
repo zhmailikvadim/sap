@@ -3,10 +3,10 @@ import FioriMain from "./FioriMain";
 import Configurator from "./Configurator";
 import credChart from "./CredChart";
 import debtChart from "./DebtChart";
-import "@ui5/webcomponents/dist/Assets";
-import "@ui5/webcomponents-fiori/dist/Assets"; // only if you are using the ShellBar, Product Switch or the Upload Collection
-import "@ui5/webcomponents-react/dist/Assets";
-import "@ui5/webcomponents-icons/dist/Assets";
+//import "@ui5/webcomponents/dist/Assets";
+//import "@ui5/webcomponents-fiori/dist/Assets"; // only if you are using the ShellBar, Product Switch or the Upload Collection
+//import "@ui5/webcomponents-react/dist/Assets";
+//import "@ui5/webcomponents-icons/dist/Assets";
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
