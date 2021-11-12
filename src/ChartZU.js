@@ -241,18 +241,23 @@ class ChartZU extends Component {
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
-        data: [], // ДАННЫЕ - здесь ваши данные- 652230, 1580, 28748.. - так же в массиве и в том же порядке.
+        data: [], 
       };
 
         chartData.labels.forEach((item_data) => {
+          var dataExist = false;
           this.state.data.forEach((item, i) => {
             if (upravlenie_sklad === item.upravlenie_sklad && item.data1 === item_data) {
+              dataExist = true;
 
               if (this.state.chartType === sumVerprMatnr) {
                 dataset.data.push(item.wlabs);
               }
             }
           });
+          if (!dataExist){
+            dataset.data.push('0');
+          }
         });
       chartData.datasets.push(dataset);
     });
@@ -356,4 +361,3 @@ class ChartZU extends Component {
 }
 
 export default ChartZU;
-
