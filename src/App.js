@@ -24,10 +24,10 @@ class App extends Component {
             <Route path="/configurator" component={Configurator} />
             <Route path="/credchart" component={credChart} />
             <Route path="/debtchart" component={debtChart} />
-            <Route path="/" component={cogiChartNew} />
+            <Route path="/cogichart" component={cogiChartNew} />
             <Route path="/chartzu" component={ChartZU} />
             <Route
-              path="/cogichart"
+              path="/"
               component={() => {
                 global.window &&
                   (global.window.location.href =
