@@ -283,8 +283,10 @@ class CogiChartNew extends Component {
         });
       } else {
         chartData.labels.forEach((item_data) => {
+          var dataExist = false;
           this.state.data.forEach((item, i) => {
             if (nazw === item.nazw && item.data1 === item_data) {
+              dataExist = true;
               if (this.state.chartType === countMatnr) {
                 dataset.data.push(item.count_matnr);
               }
@@ -293,6 +295,9 @@ class CogiChartNew extends Component {
               }
             }
           });
+          if (!dataExist){
+            dataset.data.push('0');
+          }
         });
       }
       chartData.datasets.push(dataset);
