@@ -5,10 +5,13 @@ import "chartjs-plugin-zoom";
 import { ActionBar } from "fundamental-react/lib/ActionBar";
 import { Button } from "fundamental-react/lib/Button";
 
-const sumVerprMatnr = "sumVerprMatnr";
+const oc_wlabs = "oc_wlabs";
+const oc_wlabs2 = "oc_wlabs2";
 
-const sumVerprMatnrTitle =
+const oc_wlabsTitle =
   "Динамика остатков материалов на складах в разрезе партии";
+const oc_wlabs2Title =
+  "Динамика остатков материалов на складах в разрезе партии без движени более двух лет";
 
 class ChartZU extends Component {
   constructor() {
@@ -20,47 +23,49 @@ class ChartZU extends Component {
       dataSAP: [],
       fcat: [],
       fields: [],
-      chartType: sumVerprMatnr,
-      title: sumVerprMatnrTitle,
+      chartType: oc_wlabs,
+      title: oc_wlabsTitle,
     };
   }
 
   async componentDidMount() {
-    var myHeaders = new Headers();
+  var myHeaders = new Headers();
 
-    var requestOptions = {
-      method: "GET",
-      credentials: "include",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    await fetch(
-           "https://sap-odata.gomselmash.by/sap/opu/odata/sap/ZRA_C_ZU_CDS/ZRA_C_ZU?$format=json",
-      requestOptions
-    )
-      .then((response) => response.json())
-      .then((result) => {
-        this.setState({
-          data: result.d.results,
-          isLoading: false,
-        });
-      })
-      .catch((error) => console.log("error", error));
-  }
-
-  onSumVerprMatnr = () => {
-    this.setState({ chartType: sumVerprMatnr, title: sumVerprMatnrTitle });
+  var requestOptions = {
+    method: "GET",
+    credentials: "include",
+    headers: myHeaders,
+    redirect: "follow",
   };
 
-  render() {
-    let emphasizedSumVerpr = "";
-    let yAxisLabel = "";
+  await fetch(
+    "https://sap-odata.gomselmash.by/sap/opu/odata/sap/ZRA_C_ZU_CDS/ZRA_C_ZU?$format=json",
+    requestOptions
+  )
+    .then((response) => response.json())
+    .then((result) => {
+      this.setState({
+        data: result.d.results,
+        isLoading: false,
+      });
+    })
+    .catch((error) => console.log("error", error));
+ }
 
-    if (this.state.chartType === sumVerprMatnr) {
-      emphasizedSumVerpr = "emphasized";
+  onoc_wlabs = () => {
+    this.setState({ chartType: oc_wlabs, title: oc_wlabsTitle });
+  };
+  onSumVerprAll = () => {
+    this.setState({ chartType: oc_wlabs2, title: oc_wlabs2Title });
+  }
+
+  render() {
+    let emphasizedWlabs = "";
+    let emphasizedWlabs2 = "";
+    let yAxisLabel = "";
+  
+      emphasizedWlabs = "emphasized";
       yAxisLabel = "Белорусский рубль, BYN";
-    }
 
     let uniqueLabels = [];
     let uniqueCeh = [];
@@ -244,45 +249,69 @@ class ChartZU extends Component {
         data: [], 
       };
 
-        chartData.labels.forEach((item_data) => {
-          var dataExist = false;
-          this.state.data.forEach((item, i) => {
-            if (upravlenie_sklad === item.upravlenie_sklad && item.data1 === item_data) {
-              dataExist = true;
+       if (this.state.chartType === oc_wlabs2) {
+         chartData.labels.forEach((item_data) => {
+           var dataExist = false;
+           this.state.data.forEach((item, i) => {
+             if (upravlenie_sklad === item.upravlenie_sklad && item.data1 === item_data) {
+               dataExist = true;
+                dataset.data.push(item.wlabs2);
+              }
+           });
+           if (!dataExist){
+             dataset.data.push('0');
+           }
+         });
+       }
 
-              if (this.state.chartType === sumVerprMatnr) {
+       if (this.state.chartType === oc_wlabs) {
+         chartData.labels.forEach((item_data) => {
+           var dataExist = false;
+           this.state.data.forEach((item, i) => {
+             if (upravlenie_sklad === item.upravlenie_sklad && item.data1 === item_data) {
+               dataExist = true;
                 dataset.data.push(item.wlabs);
               }
-            }
-          });
-          if (!dataExist){
+           });
+           if (!dataExist){
             dataset.data.push('0');
-          }
-        });
-      chartData.datasets.push(dataset);
+           }
+         });
+       }
+     
+       chartData.datasets.push(dataset);
+   
     });
 
-      const defaultTableBar = (
-      <React.Fragment>
-        <ActionBar
-          actions={
-              <Button
-                option={emphasizedSumVerpr}
-                onClick={() => this.onSumVerprMatnr()}
-              >
-                Общие остатки по подразделениям
-              </Button>
-          }
-          description={"Остатки"}
-          title={"ZU"}
-        />
-      </React.Fragment>
-    ); 
- 
+    const defaultTableBar = (
+        <React.Fragment>
+          <ActionBar
+            actions={
+              <>
+                <Button
+                  option={emphasizedWlabs}
+                  onClick={() => this.onoc_wlabs()}
+                >
+                  Общие остатки по подразделениям
+                </Button>
+                <Button
+                  option={emphasizedWlabs2}
+                  onClick={() => this.onSumVerprAll()}
+                >
+                  Остатки без движения более двух лет
+                </Button>
+              </>
+            }
+            description={"Остатки"}
+            title={"ZU"}
+          />
+        </React.Fragment>
+   );
+
     const options = {
-      tooltips: {
-        mode: "index",
-      },
+        tooltips: {
+          mode: "index",
+        },
 
       title: {
         display: true,
@@ -359,5 +388,4 @@ class ChartZU extends Component {
     return <div>{outChart}</div>;
   }
 }
-
 export default ChartZU;
