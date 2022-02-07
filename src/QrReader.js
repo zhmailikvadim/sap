@@ -29,6 +29,7 @@ class App extends Component {
     super(props);
     this.state = {
       menuItem: "1",
+      headers : {},
       data: "NoResult",
       delay: 200,
       result: "Ready",
@@ -67,35 +68,66 @@ class App extends Component {
       }
       if (diff >= interval || !qrOld) {
         console.log(JSON.stringify(qrOne));
-        fetch("https://sap-odata-dev.gomselmash.by/sap/opu/odata/sap/ZVA_QRREADER_SRV/TextSet?$format=json", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(qrOne),
-        })
-          .then((res) => {
-            console.log(res);
-            return res.json();
-          })
-          .then((data) => {
-            console.log(data);
-            if (data.success) {
-              qrOne.id = data.id;
-              qrList.unshift(qrOne);
-              qrList.sort((a, b) => {
-                let result;
-                if (a.id > b.id) result = -1;
-                if (a.id < b.id) result = 1;
-                return result;
-              });
-              this.setState({ qrList, success_add_sql: true });
-              console.log(this.state.success_add_sql);
+        let url = "https://sap-odata-dev.gomselmash.by/sap/opu/odata/sap/ZVA_QRREADER_SRV/TextSet?$format=json";
+
+        var myHeaders = new Headers();
+        myHeaders.append("x-csrf-token", "fetch");
+        myHeaders.append("Authorization", "Basic emhtYWlsaWtfdnY6SHlkcmFyZ3lydW04MA==");
+        //myHeaders.append("Cookie", "SAP_SESSIONID_NWD_100=aD96jCbP7T5t3xN8yNYNnyXUtOKH1hHsoycAUFa-bjE%3d; sap-usercontext=sap-client=100");
+        
+        var requestOptions = {
+          method: 'GET',
+          headers: myHeaders,
+          redirect: 'follow'
+        };
+        
+        let token;
+        fetch(url, requestOptions)
+          .then(response => {response.headers.forEach((value, key, object) => {
+            if (key === 'x-csrf-token'){
+              token = value
             }
+            
+            });
           })
-          .catch((err) => {
-            console.log(err);
-          });
+          .then(result => {console.log(token)
+          
+            var myHeaders1 = new Headers();
+            myHeaders1.append("x-csrf-token", token);
+            myHeaders1.append("Content-Type", "application/json");  
+            myHeaders1.append("Authorization", "Basic emhtYWlsaWtfdnY6SHlkcmFyZ3lydW04MA==");
+    
+            fetch("https://sap-odata-dev.gomselmash.by/sap/opu/odata/sap/ZVA_QRREADER_SRV/TextSet", {
+              method: "POST",
+              myHeaders1,  
+              body: JSON.stringify({
+                "TEXT": "TEXT"
+              })
+            })
+              .then((res) => {
+                console.log(res);
+                return res.json();
+              })
+              .then((data) => {
+                console.log(data);
+                if (data.success) {
+                  qrOne.id = data.id;
+                  qrList.unshift(qrOne);
+                  qrList.sort((a, b) => {
+                    let result;
+                    if (a.id > b.id) result = -1;
+                    if (a.id < b.id) result = 1;
+                    return result;
+                  });
+                  this.setState({ qrList, success_add_sql: true });
+                  console.log(this.state.success_add_sql);
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+              });         
+          })
+          .catch(error => console.log('error', error))
       } else {
         qrList.unshift(qrOne);
         this.setState({qrList, success_add_sql: true });
